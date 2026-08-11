@@ -1,93 +1,87 @@
-# 🚀 LaraCommerce API
+# LaraCommerce API
 
-An enterprise-grade, highly scalable RESTful API built with **Laravel 11**, designed for modern e-commerce applications. This project implements industry best practices including Clean Architecture principles, Laravel Sanctum authentication, API resource transformations, robust validation, and automated feature testing.
+A working Laravel 13 REST API for an e-commerce back end. The repository contains real database migrations, Eloquent models, Sanctum authentication, product search, stock-aware carts, transactional checkout, seed data, and feature tests.
 
----
+## What is implemented
 
-## 🛠️ Tech Stack & Architecture
+| Area | Working capabilities |
+|---|---|
+| Authentication | Registration, login, token revocation, logout with Laravel Sanctum |
+| Catalog | Active-product listing, search, category filtering, price range filtering, pagination |
+| Cart | Add items, merge quantities, update quantities, delete items, subtotal calculation |
+| Checkout | Validated shipping address, stock checks, atomic order creation, stock decrement, cart clearing |
+| Quality | SQLite-friendly migrations, demo seed data, automated feature tests |
 
-- **Framework**: Laravel 11 (PHP 8.3)
-- **Authentication**: Laravel Sanctum (Token-based API authentication)
-- **Database**: MySQL / SQLite (with Eloquent ORM & Migrations)
-- **API Documentation**: OpenAPI 3.0 / Postman Collection Ready
-- **Architecture**: Service-Repository Pattern & Form Request Validation
+## Stack
 
----
+- PHP 8.3+
+- Laravel 13
+- Laravel Sanctum
+- Eloquent ORM
+- SQLite for local development; MySQL/PostgreSQL-compatible schema
+- PHPUnit feature tests
 
-## 📦 Core Features
-
-1. **Authentication & Authorization**:
-   - Secure User Registration & Login with Sanctum token generation.
-   - Role-based access control (Customer vs Admin).
-
-2. **Product Catalog Management**:
-   - Paginated product listing with advanced filtering (by category, price range, search query).
-   - Detailed product view with inventory tracking and stock alerts.
-
-3. **Cart & Order Processing**:
-   - Add/Update/Remove items from shopping cart.
-   - Checkout system with order status workflow (Pending, Processing, Completed, Cancelled).
-
-4. **Security & Performance**:
-   - Rate limiting on sensitive endpoints (Login/Register).
-   - Strict input validation using Form Requests.
-   - Eloquent API Resources for clean JSON data formatting.
-
----
-
-## ⚙️ Installation & Getting Started
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/ahmedemadm90/laracommerce-api.git
-   cd laracommerce-api
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   composer install
-   ```
-
-3. **Environment Setup**:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-4. **Run Migrations & Seeders**:
-   ```bash
-   php artisan migrate --seed
-   ```
-
-5. **Start Development Server**:
-   ```bash
-   php artisan serve
-   ```
-
----
-
-## 📡 API Endpoints Overview
-
-| Method | Endpoint | Description | Access |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/v1/auth/register` | Register new user | Public |
-| `POST` | `/api/v1/auth/login` | Authenticate & get token | Public |
-| `GET` | `/api/v1/products` | Get paginated products list | Public |
-| `GET` | `/api/v1/products/{id}` | Get product details | Public |
-| `POST` | `/api/v1/cart` | Add item to cart | Authenticated |
-| `POST` | `/api/v1/orders` | Place new order | Authenticated |
-| `GET` | `/api/v1/orders` | Get user order history | Authenticated |
-
----
-
-## 🧪 Running Tests
+## Quick start
 
 ```bash
-php artisan test
+git clone https://github.com/ahmedemadm90/laracommerce-api.git
+cd laracommerce-api
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
 ```
 
----
+The seeded demo account is `demo@laracommerce.test` with password `password`.
 
-## 👨‍💻 Author
+## API examples
 
-Developed with ❤️ by **Ahmed Emad** (Backend & Full-Stack Developer).
+Register:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/auth/register \
+  -H 'Accept: application/json' -H 'Content-Type: application/json' \
+  -d '{"name":"Ada Lovelace","email":"ada@example.com","password":"password123","password_confirmation":"password123"}'
+```
+
+Browse the catalog:
+
+```bash
+curl 'http://127.0.0.1:8000/api/v1/products?search=keyboard&per_page=10'
+```
+
+Add an item to the cart and checkout using the bearer token returned from login:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/cart \
+  -H 'Authorization: Bearer YOUR_TOKEN' -H 'Content-Type: application/json' \
+  -d '{"product_id":1,"quantity":2}'
+
+curl -X POST http://127.0.0.1:8000/api/v1/orders \
+  -H 'Authorization: Bearer YOUR_TOKEN' -H 'Content-Type: application/json' \
+  -d '{"shipping_address":{"name":"Ada Lovelace","phone":"+201000000000","line1":"1 Main Street","city":"Cairo","country":"Egypt"}}'
+```
+
+## Test suite
+
+```bash
+php artisan test --compact
+```
+
+The test suite covers token creation, catalog search, transactional checkout, inventory decrement, and cart clearing.
+
+## Project structure
+
+```text
+app/Http/Controllers/   Auth, catalog, cart, and order endpoints
+app/Models/             User, category, product, cart, order, and order-item models
+database/migrations/    Commerce schema and Sanctum token schema
+database/seeders/       Demo customer and catalog
+routes/api.php          Versioned `/api/v1` route map
+tests/Feature/          End-to-end HTTP tests
+```
+
+## Author
+
+Ahmed Emad — Backend, Mobile, and Automation Developer.
